@@ -96,6 +96,7 @@ defmodule Holidefs.Mixfile do
       {:gettext, "~> 0.15"},
       {:inch_ex, only: :docs},
       {:yaml_elixir, "~> 2.0"},
+      {:jason, "~> 1.3"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end

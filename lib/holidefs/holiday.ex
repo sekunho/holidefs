@@ -9,6 +9,7 @@ defmodule Holidefs.Holiday do
   alias Holidefs.Holiday
   alias Holidefs.Options
 
+  @derive Jason.Encoder
   defstruct [:name, :raw_date, :observed_date, :date, :uid, informal?: false]
 
   @type t :: %Holidefs.Holiday{
