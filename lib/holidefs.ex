@@ -93,8 +93,9 @@ defmodule Holidefs do
   returns a `{:error, reason}` tuple.
   """
   @spec get_regions(locale_code) :: {:ok, [String.t()]} | {:error, error_reasons}
-  def get_regions(locale) do
-    case Store.get_definition(locale) do
+  @spec get_regions(locale_code, function()) :: {:ok, [String.t()]} | {:error, error_reasons}
+  def get_regions(locale, get_definition \\ &Store.get_definition/1) do
+    case get_definition.(locale) do
       nil -> {:error, :no_def}
       definition -> {:ok, Definition.get_regions(definition)}
     end
@@ -109,9 +110,12 @@ defmodule Holidefs do
   @spec on(locale_code, Date.t()) :: {:ok, [Holidefs.Holiday.t()]} | {:error, error_reasons}
   @spec on(locale_code, Date.t(), Holidefs.Options.attrs()) ::
           {:ok, [Holidefs.Holiday.t()]} | {:error, error_reasons}
-  def on(locale, date, opts \\ []) do
+  @spec on(locale_code, Date.t(), function()) :: {:ok, [Holidefs.Holiday.t()]} | {:error, error_reasons}
+  @spec on(locale_code, Date.t(), function(), Holidefs.Options.attrs()) ::
+          {:ok, [Holidefs.Holiday.t()]} | {:error, error_reasons}
+  def on(locale, date, get_definition \\ &Store.get_definition/1, opts \\ []) do
     locale
-    |> Store.get_definition()
+    |> get_definition.()
     |> find_between(date, date, opts)
   end
 
@@ -124,11 +128,14 @@ defmodule Holidefs do
   @spec year(locale_code, integer) :: {:ok, [Holidefs.Holiday.t()]} | {:error, String.t()}
   @spec year(locale_code, integer, Holidefs.Options.attrs()) ::
           {:ok, [Holidefs.Holiday.t()]} | {:error, error_reasons}
-  def year(locale, year, opts \\ [])
+  @spec year(locale_code, integer, function()) :: {:ok, [Holidefs.Holiday.t()]} | {:error, String.t()}
+  @spec year(locale_code, integer, function(), Holidefs.Options.attrs()) ::
+          {:ok, [Holidefs.Holiday.t()]} | {:error, error_reasons}
+  def year(locale, year, get_definition \\ &Store.get_definition/1, opts \\ [])
 
-  def year(locale, year, opts) when is_integer(year) do
+  def year(locale, year, get_definition, opts) when is_integer(year) do
     locale
-    |> Store.get_definition()
+    |> get_definition.()
     |> case do
       nil ->
         {:error, :no_def}
@@ -138,7 +145,7 @@ defmodule Holidefs do
     end
   end
 
-  def year(_, _, _) do
+  def year(_, _, _, _) do
     {:error, :invalid_date}
   end
 
@@ -168,11 +175,11 @@ defmodule Holidefs do
   If succeed returns a `{:ok, holidays}` tuple, otherwise
   returns a `{:error, reason}` tuple
   """
-  @spec between(locale_code, Date.t(), Date.t(), Holidefs.Options.attrs()) ::
+  @spec between(locale_code, Date.t(), Date.t(), function(), Holidefs.Options.attrs()) ::
           {:ok, [Holidefs.Holiday.t()]} | {:error, error_reasons}
-  def between(locale, start, finish, opts \\ []) do
+  def between(locale, start, finish, get_definition \\ &Store.get_definition/1, opts \\ []) do
     locale
-    |> Store.get_definition()
+    |> get_definition.()
     |> find_between(start, finish, opts)
   end
 
